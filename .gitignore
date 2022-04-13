@@ -1,0 +1,6 @@
+# Build files
+bza_platypus
+build/
+
+# Statistics files
+*.csv

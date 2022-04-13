@@ -1,0 +1,6 @@
+1. spravit analyzu priemernej spotreby specifickych instrukcii
+   (napr. MUL, DIV, ADD,...) + spravit grafy, vyhodnotit
+2. spravit analyzu priemernej spotreby operandov specifickych instrukcii
+   na zaklade hammingovej vahy + spravit grafy, vyhodnotit
+3. kernel kaslr
+
