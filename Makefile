@@ -8,6 +8,9 @@ OBJECTS := $(addprefix build/,$(notdir $(SRCS:.cpp=.o)))
 LIBS := `pkg-config --libs powercap`
 PACKFILE := xnemet04.zip
 
+# Python
+VENV_PATH := .venv
+
 .PHONY: build clean pack
 
 all: build
@@ -27,3 +30,15 @@ pack:
 
 clean:
 	rm -f $(NAME) $(OBJECTS) $(PACKFILE)
+
+# Python
+venv:
+	python3 -m venv $(VENV_PATH)
+
+pip-install:
+# TODO this doesn't work
+ifeq ($(shell pip -V | grep $(VENV_PATH)), 0)
+	python3 -m pip install -r requirements.txt
+else
+	@echo "Possibly not in venv. Run 'make venv' and then 'source $(VENV_PATH)/bin/activate'."
+endif

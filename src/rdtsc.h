@@ -1,6 +1,11 @@
 // Taken from
 // https://github.com/LITMUS-RT/liblitmus/blob/master/arch/x86/include/asm/cycles.h
 
+// Using the TSC values should be fine, as on modern CPUs it acts as a wall clock
+//  (https://forums.guru3d.com/threads/a-bit-detailed-info-on-intel-time-stamp-counter-tsc.433977/)
+// and intel has its own white paper on how to implement benchmarking via the RDTSC instruction (//TODO maybe implement this?)
+//  (https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf)
+
 #ifndef RDTSC_H
 #define RDTSC_H
 

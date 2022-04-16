@@ -4,3 +4,6 @@ build/
 
 # Statistics files
 *.csv
+
+# Python venv
+.venv/

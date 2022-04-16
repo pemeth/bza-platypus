@@ -41,13 +41,13 @@ void Measurement::stop_measurement()
 }
 
 /**
- * @brief Get the measured energy in Joules.
+ * @brief Get the measured energy in micro Joules.
  *
- * @return Energy between measurements in Joules.
+ * @return Energy between measurements in micro Joules.
  */
 double Measurement::get_energy()
 {
-    return (this->energy2 - this->energy1) / FROM_MICRO_CONVERSION_CONST;
+    return (this->energy2 - this->energy1);
 }
 
 /**

@@ -35,10 +35,9 @@ void Stats::dump_to_file(std::string filename)
 
     const size_t vector_size = this->energies.size();
 
-    f << "energy,time\n";
+    f << "energy\n";
     for (size_t i = 0; i < vector_size; i++) {
-        f << this->energies[i] << ','
-            << this->times[i] << '\n';
+        f << this->energies[i] << '\n';
     }
 
     f.close();
