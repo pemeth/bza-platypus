@@ -22,19 +22,11 @@ void save_empty_loop_stats(std::string filename, Measurement m, uint64_t runs, u
     f.close();
 }
 
-int main(int argc, char const *argv[])
+void measure_all_instructions(volatile uint64_t *mem, Measurement m, uint64_t runs, uint64_t iterations)
 {
-    // Init
-    Measurement m = Measurement(calibration);
-    if (m.init_rapl() < 0) {
-        return EXIT_FAILURE;
-    }
-
-    const int iterations = 50000; // iterations = 10000
-    const int runs = 30000; //runs = 1600000;
-    volatile uint64_t mem[iterations*15];
-
     // Measure instrucions
+    // TODO I measure the PACKAGE energy, which does not contain the DRAM domain - measure that as well and add them up...
+    // might help with the statistical data
     Stats add_stats = instr::measure_add(1, &m, runs, iterations); std::cerr << "add done\n";
     add_stats.dump_to_file("add.csv");
 
@@ -58,6 +50,21 @@ int main(int argc, char const *argv[])
 
     Stats nop_stats = instr::measure_nop(&m, runs, iterations); std::cerr << "nop done\n";
     nop_stats.dump_to_file("nop.csv");
+}
+
+int main(int argc, char const *argv[])
+{
+    // Init
+    Measurement m = Measurement(calibration);
+    if (m.init_rapl() < 0) {
+        return EXIT_FAILURE;
+    }
+
+    const int iterations = 50000;
+    const int runs = 10000; // runs have changed their meaning - now it is the number of valid (nonzero) runs of measurements.
+    volatile uint64_t mem[iterations*15]; // TODO do something with this... not sure if it does anything at all and causes segfault if iterations is too high
+
+    measure_all_instructions(mem, m, runs, iterations);
 
     // Measure empty loop energy draw
     const int eval_multiplicator = 50;

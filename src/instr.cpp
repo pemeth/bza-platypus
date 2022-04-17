@@ -10,14 +10,18 @@ Stats measure_mov(uint64_t src, volatile uint64_t *mem, Measurement *m, uint64_t
 
     Stats s = Stats();
 
-    for (uint64_t r = 0; r < runs; r++) {
+   uint64_t added_cnt = 0;
+   while (added_cnt != runs) {
         m->start_measurement();
         for (uint64_t i = 0; i < iterations; ++i) {
             asm volatile ("mov %0, %1" : "=r"(dst) : "m"(mem[i]));
         }
         m->stop_measurement();
 
-        s.add(*m);
+        if (m->get_energy() != 0) {
+            added_cnt++;
+            s.add(*m);
+        }
     }
 
     return s;
@@ -29,14 +33,18 @@ Stats measure_add(volatile uint16_t op, Measurement *m, uint64_t runs, uint64_t 
 
     volatile uint16_t a = 2;
 
-    for (uint64_t r = 0; r < runs; r++) {
+   uint64_t added_cnt = 0;
+   while (added_cnt != runs) {
         m->start_measurement();
         for (uint64_t i = 0; i < iterations; ++i) {
             asm volatile ("add %1, %1" : "=r"(a) : "r"(op));
         }
         m->stop_measurement();
 
-        s.add(*m);
+        if (m->get_energy() != 0) {
+            added_cnt++;
+            s.add(*m);
+        }
     }
 
     return s;
@@ -48,14 +56,18 @@ Stats measure_imul(volatile uint64_t op, Measurement *m, uint64_t runs, uint64_t
 
     uint64_t a;
 
-    for (uint64_t r = 0; r < runs; r++) {
+    uint64_t added_cnt = 0;
+    while (added_cnt != runs) {
         m->start_measurement();
         for (uint64_t i = 0; i < iterations; ++i) {
             asm volatile ("imul $0x5, %1" : "=r"(a) : "r"(op));
         }
         m->stop_measurement();
 
-        s.add(*m);
+        if (m->get_energy() != 0) {
+            added_cnt++;
+            s.add(*m);
+        }
     }
 
     return s;
@@ -69,7 +81,8 @@ Stats measure_rdrand(Measurement *m, uint64_t runs, uint64_t iterations)
 
     // std::cerr << "rdrand\n";
 
-    for (uint64_t r = 0; r < runs; r++) {
+   uint64_t added_cnt = 0;
+   while (added_cnt != runs) {
         m->start_measurement();
         for (uint64_t i = 0; i < iterations; ++i) {
             asm volatile ("rdrand %0" : "=r"(a));
@@ -78,7 +91,10 @@ Stats measure_rdrand(Measurement *m, uint64_t runs, uint64_t iterations)
 
         //if (r % (runs / 10) == 0) std::cerr << "|"; // TODO remove - only for debugging
 
-        s.add(*m);
+        if (m->get_energy() != 0) {
+            added_cnt++;
+            s.add(*m);
+        }
     }
 
     return s;
@@ -90,7 +106,8 @@ Stats measure_fscale(Measurement *m, uint64_t runs, uint64_t iterations)
 
     // std::cerr << "fscale\n";
 
-    for (uint64_t r = 0; r < runs; r++) {
+   uint64_t added_cnt = 0;
+   while (added_cnt != runs) {
         m->start_measurement();
         for (uint64_t i = 0; i < iterations; ++i) {
             asm volatile ("fscale");
@@ -99,7 +116,10 @@ Stats measure_fscale(Measurement *m, uint64_t runs, uint64_t iterations)
 
         //if (r % (runs / 10) == 0) std::cerr << "|"; // TODO remove - only for debugging
 
-        s.add(*m);
+        if (m->get_energy() != 0) {
+            added_cnt++;
+            s.add(*m);
+        }
     }
 
     return s;
@@ -113,7 +133,8 @@ Stats measure_rdtsc(Measurement *m, uint64_t runs, uint64_t iterations)
 
     // std::cerr << "rdtsc\n";
 
-    for (uint64_t r = 0; r < runs; r++) {
+   uint64_t added_cnt = 0;
+   while (added_cnt != runs) {
         m->start_measurement();
         for (uint64_t i = 0; i < iterations; ++i) {
             asm volatile ("rdtsc" : "=a" (a), "=d" (d));
@@ -122,7 +143,10 @@ Stats measure_rdtsc(Measurement *m, uint64_t runs, uint64_t iterations)
 
         //if (r % (runs / 10) == 0) std::cerr << "|"; // TODO remove - only for debugging
 
-        s.add(*m);
+        if (m->get_energy() != 0) {
+            added_cnt++;
+            s.add(*m);
+        }
     }
 
     return s;
@@ -136,7 +160,8 @@ Stats measure_clflush(Measurement *m, uint64_t runs, uint64_t iterations)
 
     // std::cerr << "clflush\n";
 
-    for (uint64_t r = 0; r < runs; r++) {
+   uint64_t added_cnt = 0;
+   while (added_cnt != runs) {
         m->start_measurement();
         for (uint64_t i = 0; i < iterations; ++i) {
             asm volatile ("clflush (%0)" :: "r"(&a));
@@ -145,7 +170,10 @@ Stats measure_clflush(Measurement *m, uint64_t runs, uint64_t iterations)
 
         //if (r % (runs / 10) == 0) std::cerr << "|"; // TODO remove - only for debugging
 
-        s.add(*m);
+        if (m->get_energy() != 0) {
+            added_cnt++;
+            s.add(*m);
+        }
     }
 
     return s;
@@ -155,14 +183,18 @@ Stats measure_nop(Measurement *m, uint64_t runs, uint64_t iterations)
 {
     Stats s = Stats();
 
-    for (uint64_t r = 0; r < runs; r++) {
+   uint64_t added_cnt = 0;
+   while (added_cnt != runs) {
         m->start_measurement();
         for (uint64_t i = 0; i < iterations; ++i) {
             asm volatile ("nop");
         }
         m->stop_measurement();
 
-        s.add(*m);
+        if (m->get_energy() != 0) {
+            added_cnt++;
+            s.add(*m);
+        }
     }
 
     return s;

@@ -22,21 +22,17 @@ for input in sys.argv[1:]:
     data = data / loop_iterations
     data = data - energy_per_iteration_micro
 
-    # Shows good separation between high energy instructions (clflush, rdrand, fscale, rdtsc),
-    # but no separation between imul, add, mov (r, mem)
-    data = np.split(data, runs)
-    data = np.median(data, axis=1)
-    data = data[(data < 2)]
-    data = data[(data > 0.05)]
+    # For consistent zoom-in on the plot
+    data = data[(data <= 1.5)]
 
-    hist, bins = np.histogram(data, bins=500)
-    plt.plot(bins[1:], hist, label=input)
+    hist, bins = np.histogram(data, bins=100)
+    plt.plot(bins[1:], hist, label=(input.split(".")[0]))
 
-plt.ylabel("Density")
-plt.xlabel("Energy in \u03bcJ")
+plt.ylabel("Počet prípadov")
+plt.xlabel("Energia v \u03bcJ")
 #plt.xlabel("Energy in pJ")
 
-plt.title("Instruction Comparison")
+#plt.title("Porovnanie inštrukcií")
 plt.legend()
 plt.grid()
 plt.show()
