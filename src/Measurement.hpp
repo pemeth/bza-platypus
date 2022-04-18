@@ -27,6 +27,7 @@ private:
 
 public:
     Measurement(cycles_t cycles_per_sec);
+    Measurement(cycles_t cycles_per_sec, uint64_t energy1, uint64_t energy2);
     ~Measurement();
 
     int init_rapl();

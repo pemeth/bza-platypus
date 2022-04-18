@@ -18,6 +18,24 @@ Measurement::Measurement(cycles_t cycles_per_sec)
     this->pkgs = nullptr;
 }
 
+/**
+ * @brief For debugging purposes mainly.
+ *
+ * @param cycles_per_sec
+ * @param energy1
+ * @param energy2
+ */
+Measurement::Measurement(cycles_t cycles_per_sec, uint64_t energy1, uint64_t energy2)
+{
+    this->cycles_per_sec = cycles_per_sec;
+
+    this->cycles1 = 0;
+    this->cycles2 = 0;
+    this->energy1 = 0;
+    this->energy2 = 0;
+    this->pkgs = nullptr;
+}
+
 Measurement::~Measurement()
 {
 }

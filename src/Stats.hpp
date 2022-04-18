@@ -20,8 +20,10 @@ public:
     ~Stats();
 
     void add(Measurement m);
-    void dump_to_file(void);
-    void dump_to_file(std::string filename);
+    void add_time(double time);
+    void dump_energies_to_file(void);
+    void dump_energies_to_file(std::string filename);
+    void dump_times_to_file(std::string filename);
 };
 
 #endif /* STATS_H */

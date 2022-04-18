@@ -25,7 +25,14 @@ RAPL poskytuje údaje pre rôzne domény procesora:
 Toto rozdelenie platí pre väčšinu procesorov, avšak niektoré nové procesory obsahujú viac, než jednu package doménu na jednom čipe, prípadne sa dopĺňa
 nová doména \emph{psys}. % // TODO cituj/footnote https://github.com/powercap/powercap/issues/3
 RAPL registre sa podľa zistení \cite{Platypus} aktualizujú raz za $1000 \mu s$ pre doménu package a DRAM a raz za $50 \mu s$ pre doménu core.
-Rámec \code{powercap} umožňuje jednoduchý prístup k týmto doménam.
+Rámec \code{powercap} umožňuje jednoduchý prístup k týmto doménam. Tieto časy boli odmerané aj mojou implementáciou a výsledky je možné vidieť na
+obrázku \ref{img:rapl_refresh}. Žiadny zásadný rozdiel v rýchlosti aktualizácie hodnôt nebol na testovanom systéme zaznamenaný.
+
+\begin{figure}\label{img:rapl_refresh}
+  \centering
+  \includegraphics[scale=0.7]{./obrazky-figures/rapl_refresh_rate.png}
+  \caption{Porovnanie rýchlosti aktualizácie RAPL čítacov pre domény core a package.}
+\end{figure}
 
 \section{Analýza výkonu}
 V niektorých prípadoch je na hardvéri možné vykonávať postrannú analýzu systému fyzicky. Takéto prístupy vyžadujú špeciálne pomôcky,
@@ -51,6 +58,8 @@ Procesor, na ktorom boli vykonávané experimenty je \emph{Intel Core i5-4200U C
 powercap\footnote{Knižnica powercap \href{https://github.com/powercap/powercap}{https://github.com/powercap/powercap}.} pre čítanie RAPL registrov
 a implementácia rozhrania pre čítanie TSC (Time Stamp Counter) registra\footnote{Rozhranie pre čítanie TSC registra\\\href{https://github.com/LITMUS-RT/liblitmus/blob/master/arch/x86/include/asm/cycles.h}{https://github.com/LITMUS-RT/liblitmus/blob/master/arch/x86/include/asm/cycles.h}.}.
 
+Obrázky a tabuľky sú zostavované podobne ako v \cite{Platypus} pre referenciu a porovnanie získaných výsledkov.
+
 \subsection{Analýza spotreby energie pre jednotlivé inštrukcie}
 Spotreba energie inštrukcií bola meraná pomocou RAPL rozhrania, čo znamená, že vzorkovacia frekvencia je prinízka pre meranie spotreby jedného spustenia inštrukcie.
 Ako kompenzácia pre túto skutočnosť sa každá inštrukcia spúšťala $50000$-krát po sebe a bola zmeraná celková spotreba od začiatku behu po koniec. Tieto spustenia
@@ -58,8 +67,9 @@ boli zabalené do cyklu, čím sa ale pridala nežiadaná réžia do merania. Vp
 prázdneho cyklu od získaných meraní pre inštrukciu. Spotreba bola takto pre každú inštrukciu meraná toľkokrát, kým sa nezískalo $10000$ nenulových stôp.
 Ošetrenie pre prijatie iba nenulovej stopy je z dôvodu, že pri mnohých inštrukciách, ktorých rýchlosť vykonania je prinízka, sa RAPL čítače nestihnú aktualizovať.
 
-Na obrázku \ref{img:instruction_comparison} je zobrazená energetická spotreba niekoľkých inštrukcií. Inštrukcie pre túto vizualizáciu boli zvolené rovnaké
-ako v \cite{Platypus} pre možnosť porovnania rozdielnych vzťahov medzi spotrebami týchto inštrukcií.
+Na obrázku \ref{img:instruction_comparison} je zobrazená energetická spotreba vybraných inštrukcií. V porovnaní s \cite{Platypus} je možné vidieť nielen odlišné
+poradie inštrukcií v spotrebe, ale aj rôzne prekrytie spotrieb. Inštrukcia \code{clflush} je najjednoduchšie rozlíšiteľná od ostatných, pričom \code{rdtsc} sa
+od \code{mov} líši minimálne.
 
 \begin{figure}\label{img:instruction_comparison}
   \centering
@@ -67,5 +77,7 @@ ako v \cite{Platypus} pre možnosť porovnania rozdielnych vzťahov medzi spotre
   \caption{Porovnanie spotreby vybraných inštrukcií.}
 \end{figure}
 
-Základným predpokladom postranného útoku na zistenie vykonávaných inštrukcií je schopnosť rozlíšenia inštrukcií na základe ich spotreby.
+\subsection{Analýza spotreby energie pre rôzne operandy}
+Podobne ako pri meraní spotreby inštrukcií, aj tu sa inštrukcie spúšťali $50000$-krát, avšak samotných stôp sa získavalo až // TODO.
+
 

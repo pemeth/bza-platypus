@@ -60,7 +60,7 @@ Stats measure_imul(volatile uint64_t op, Measurement *m, uint64_t runs, uint64_t
     while (added_cnt != runs) {
         m->start_measurement();
         for (uint64_t i = 0; i < iterations; ++i) {
-            asm volatile ("imul $0x5, %1" : "=r"(a) : "r"(op));
+            asm volatile ("imul $0x8, %1" : "=r"(a) : "r"(op));
         }
         m->stop_measurement();
 
