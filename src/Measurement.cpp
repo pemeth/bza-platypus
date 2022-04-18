@@ -59,6 +59,26 @@ void Measurement::stop_measurement()
 }
 
 /**
+ * @brief Measure using access to the raw MSRs in /dev/cpu/{x}/msr.
+ * Kernel module 'msr' must be loaded for this to work via '$ modprobe msr'.
+ */
+void Measurement::start_measurement_msr()
+{
+    this->timer_start();
+    this->energy1 = rapl_msr(0, MSR_PKG_ENERGY_STATUS);
+}
+
+/**
+ * @brief Measure using access to the raw MSRs in /dev/cpu/{x}/msr.
+ * Kernel module 'msr' must be loaded for this to work via '$ modprobe msr'.
+ */
+void Measurement::stop_measurement_msr()
+{
+    this->energy2 = rapl_msr(0, MSR_PKG_ENERGY_STATUS);
+    this->timer_stop();
+}
+
+/**
  * @brief Get the measured energy in micro Joules.
  *
  * @return Energy between measurements in micro Joules.

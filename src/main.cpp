@@ -2,6 +2,7 @@
 #include <string>
 
 #include "instr.hpp"
+#include "rapl-msr.hpp"
 #include "Measurement.hpp"
 #include "Stats.hpp"
 
@@ -27,8 +28,11 @@ void measure_all_instructions(volatile uint64_t *mem, Measurement m, uint64_t ru
     // Measure instrucions
     // TODO I measure the PACKAGE energy, which does not contain the DRAM domain - measure that as well and add them up...
     // might help with the statistical data
-    Stats add_stats = instr::measure_add(1, &m, runs, iterations); std::cerr << "add done\n";
-    add_stats.dump_energies_to_file("add.csv");
+    Stats xor_stats = instr::measure_xor(1, &m, runs, iterations); std::cerr << "xor done\n";
+    xor_stats.dump_energies_to_file("xor.csv");
+
+    Stats inc_stats = instr::measure_inc(&m, runs, iterations); std::cerr << "inc done\n";
+    inc_stats.dump_energies_to_file("inc.csv");
 
     Stats mov_stats = instr::measure_mov(12, mem, &m, runs, iterations); std::cerr << "mov done\n";
     mov_stats.dump_energies_to_file("mov.csv");
@@ -59,6 +63,9 @@ void measure_imul_operands(Measurement m, uint64_t runs, uint64_t iterations)
     imul_stats = instr::measure_imul(0x0, &m, runs, iterations); std::cerr << "imul done\n";
     imul_stats.dump_energies_to_file("imul_hw_0.csv");
 
+    imul_stats = instr::measure_imul(0xffffffff, &m, runs, iterations); std::cerr << "imul done\n";
+    imul_stats.dump_energies_to_file("imul_hw_32.csv");
+
     imul_stats = instr::measure_imul(0xffffffffffffffff, &m, runs, iterations); std::cerr << "imul done\n";
     imul_stats.dump_energies_to_file("imul_hw_64.csv");
 }
@@ -72,24 +79,24 @@ void measure_rapl_refresh_rate()
         return;
     }
 
-    double min = 10000000000;
+    double min_time = 10000000000;
     get_cycles();get_cycles();get_cycles();
     Stats s = Stats();
 
     // RAPL refresh
     for (int r = 0; r < 100; r++) {
-        min = 10000000000;
+        min_time = 10000000000;
         for (int i = 0; i < 1000; i++) {
 
             m.start_measurement();
             do {
                 m.stop_measurement();
-            } while (m.get_energy() == 0);
+            } while (m.get_energy() >= -1 && m.get_energy() <= 1);
 
-            if (m.get_time() < min) min = m.get_time();
+            if (m.get_time() < min_time) min_time = m.get_time();
         }
 
-        s.add_time((min));
+        s.add_time((min_time));
     }
 
     s.dump_times_to_file("RAPL_PACKAGE");

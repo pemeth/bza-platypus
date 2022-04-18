@@ -63,12 +63,9 @@ def plot_operand_energy():
         # For consistent zoom-in on the plot
         data = data[(data <= 0.5)]
 
-        #sns.kdeplot(data, label=(input.split(".")[0]))
+        sns.kdeplot(data, label=(input.split(".")[0]))
 
-        hist, bins = np.histogram(data, bins='auto')
-        plt.plot(bins[1:], hist, label=(input.split(".")[0]))
-
-    plt.ylabel("Počet prípadov")
+    plt.ylabel("Odhad hustoty rozloženia (KDE)")
     plt.xlabel("Energia v \u03bcJ")
 
 #plot_rapl_refresh_rates()

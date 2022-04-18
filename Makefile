@@ -5,7 +5,7 @@ SRC_DIR := scr/
 BUILD_DIR := build/
 SRCS := $(wildcard src/*.cpp)
 OBJECTS := $(addprefix build/,$(notdir $(SRCS:.cpp=.o)))
-LIBS := `pkg-config --libs powercap`
+LIBS := `pkg-config --libs powercap` -lm
 PACKFILE := xnemet04.zip
 
 # Python
@@ -17,7 +17,7 @@ all: build
 
 run: build
 	@echo "---COMPILATION FINISHED---"
-	@sudo ./bza_platypus
+	@sudo taskset -c 0 ./bza_platypus
 
 build: $(OBJECTS)
 	$(CC) $(FLAGS) -o $(NAME) $^ $(LIBS)

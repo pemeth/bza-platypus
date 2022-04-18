@@ -8,7 +8,9 @@ namespace instr {
 
 Stats measure_mov(uint64_t src, volatile uint64_t *mem, Measurement *m, uint64_t runs, uint64_t iterations);
 
-Stats measure_add(volatile uint16_t op, Measurement *m, uint64_t runs, uint64_t iterations);
+Stats measure_xor(volatile uint64_t op, Measurement *m, uint64_t runs, uint64_t iterations);
+
+Stats measure_inc(Measurement *m, uint64_t runs, uint64_t iterations);
 
 Stats measure_imul(volatile uint64_t op, Measurement *m, uint64_t runs, uint64_t iterations);
 

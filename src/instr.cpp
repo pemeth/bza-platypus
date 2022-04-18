@@ -27,17 +27,40 @@ Stats measure_mov(uint64_t src, volatile uint64_t *mem, Measurement *m, uint64_t
     return s;
 }
 
-Stats measure_add(volatile uint16_t op, Measurement *m, uint64_t runs, uint64_t iterations)
+Stats measure_xor(volatile uint64_t op, Measurement *m, uint64_t runs, uint64_t iterations)
 {
     Stats s = Stats();
 
-    volatile uint16_t a = 2;
+    volatile uint64_t a = 2;
 
    uint64_t added_cnt = 0;
    while (added_cnt != runs) {
         m->start_measurement();
         for (uint64_t i = 0; i < iterations; ++i) {
-            asm volatile ("add %1, %1" : "=r"(a) : "r"(op));
+            asm volatile ("xor %0, %1" : "=r"(a) : "r"(op));
+        }
+        m->stop_measurement();
+
+        if (m->get_energy() != 0) {
+            added_cnt++;
+            s.add(*m);
+        }
+    }
+
+    return s;
+}
+
+Stats measure_inc(Measurement *m, uint64_t runs, uint64_t iterations)
+{
+    Stats s = Stats();
+
+    volatile uint64_t a = 0;
+
+   uint64_t added_cnt = 0;
+   while (added_cnt != runs) {
+        m->start_measurement();
+        for (uint64_t i = 0; i < iterations; ++i) {
+            asm volatile ("inc %0" : "=r"(a));
         }
         m->stop_measurement();
 

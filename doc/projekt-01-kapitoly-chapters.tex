@@ -4,17 +4,16 @@
 // TODO
 
 \chapter{Platypus}
-Moderné procesory od výrobcu \emph{intel} majú na svojich čipoch integrované obvody a čítače pre počítanie a ukladanie odhadu spotreby niektorých častí procesora.
-Prístup k týmto čítačom (sekcia \ref{sec:rapl}) bol pôvodne neprivilegovaný, čo otváralo možnosti potenciálnych postranných útokov, a na základe čoho bola rodina útokov
+Moderné procesory od výrobcu \emph{Intel} majú na svojich čipoch integrované obvody a čítače pre počítanie a ukladanie odhadu spotreby niektorých častí procesora.
+Prístup k týmto čítačom (sekcia \ref{sec:rapl}) bol pôvodne neprivilegovaný, čo otváralo možnosti potenciálnych postranných útokov, na základe čoho bola rodina útokov
 Platypus vyvinutá. Jedná sa o plne softvérové útoky, ktorými je možné extrahovať rôzne citlivé informácie z napadnutého systému. Medzi samotné útoky
-patrí rozlišovanie vykonávaných inštrukcií, rozlišovanie veľkostí operandov inštrukcií, prípadne aj získanie RSA kľúča zo \emph{square-and-always-multiply} algoritmu.
+patrí rozlišovanie vykonávaných inštrukcií a veľkostí ich operandov, získanie RSA kľúča zo \emph{square-and-always-multiply} algoritmu a mnoho ďalších.
 
 \section{Intel RAPL} \label{sec:rapl}
-Moderné \emph{intel} procesory poskytujú \emph{RAPL} (Running Average Power Limit) rozhrania pre monitorovanie odhadovanej akumulovanej spotreby procesora
+Moderné \emph{Intel} procesory poskytujú \emph{RAPL} (Running Average Power Limit) rozhrania pre monitorovanie odhadovanej akumulovanej spotreby procesora
 od jeho resetu. Táto spotreba je ukladaná v modelu špecifických registroch (MSR) a je ju možné čítať priamo (rozhrania \code{/dev/msr} alebo \code{/dev/safe-msr}),
 prípadne za pomoci rámca \code{powercap}. Týmto spôsobom meraná spotreba je často využívaná pre rôzne účely ako sú modulácia výkonu procesora,
 sledovanie spotreby, prípadne profilovanie softvéru.
-
 RAPL poskytuje údaje pre rôzne domény procesora:
 \begin{itemize}
     \item \emph{core} pre konkrétne jadro procesora,
@@ -24,15 +23,11 @@ RAPL poskytuje údaje pre rôzne domény procesora:
 \end{itemize}
 Toto rozdelenie platí pre väčšinu procesorov, avšak niektoré nové procesory obsahujú viac, než jednu package doménu na jednom čipe, prípadne sa dopĺňa
 nová doména \emph{psys}. % // TODO cituj/footnote https://github.com/powercap/powercap/issues/3
-RAPL registre sa podľa zistení \cite{Platypus} aktualizujú raz za $1000 \mu s$ pre doménu package a DRAM a raz za $50 \mu s$ pre doménu core.
-Rámec \code{powercap} umožňuje jednoduchý prístup k týmto doménam. Tieto časy boli odmerané aj mojou implementáciou a výsledky je možné vidieť na
-obrázku \ref{img:rapl_refresh}. Žiadny zásadný rozdiel v rýchlosti aktualizácie hodnôt nebol na testovanom systéme zaznamenaný.
-
-\begin{figure}\label{img:rapl_refresh}
-  \centering
-  \includegraphics[scale=0.7]{./obrazky-figures/rapl_refresh_rate.png}
-  \caption{Porovnanie rýchlosti aktualizácie RAPL čítacov pre domény core a package.}
-\end{figure}
+Rámec \code{powercap} umožňuje jednoduchý prístup k týmto doménam.
+RAPL registre sa podľa zistení \cite{Platypus} aktualizujú raz za $1000 \mu s$ pre domény package a DRAM a raz za $50 \mu s$ pre doménu core.
+Časy pre domény core a package boli zmerané aj mojou implementáciou a žiadny zásadný rozdiel v rýchlosti aktualizácie hodnôt
+nebol na testovanom systéme zaznamenaný - obe domény sa aktualizovali raz za približne $1000 \mu s$, rovnako ako je uvedené v Intel referenčnom
+manuáli \cite{intel_manual}.
 
 \section{Analýza výkonu}
 V niektorých prípadoch je na hardvéri možné vykonávať postrannú analýzu systému fyzicky. Takéto prístupy vyžadujú špeciálne pomôcky,
@@ -45,19 +40,13 @@ Výhodou tejto metódy je schopnosť spriemerovať šum, vďaka čomu sa môžu 
 výchylky spôsobované napríklad operandami inštrukcií, ktoré nie sú pomocou SPA ľahko (alebo vôbec) detegovateľné. Prístup DPA je vhodný aj pre
 prípady, keď je vzorkovacia frekvencia výrazne obmedzená.
 
-
-\section{Základné súčasti experimentov}
-// TODO ?
-%Experimenty vykonávané v tejto práci majú niekoľko stavebných blokov.
-
 \section{Experimenty}
 Táto práca sa pokúsila reprodukovať niektoré časti publikácie \cite{Platypus}.
 // TODO uvod do sekcie
 
-Procesor, na ktorom boli vykonávané experimenty je \emph{Intel Core i5-4200U CPU @ 1.60GHz}. Bola využitá knižnica
+Procesor, na ktorom boli vykonávané experimenty je \emph{Intel Core i5-4200U CPU @ 1.60GHz} (architektúra \emph{Haswell}). Bola využitá knižnica
 powercap\footnote{Knižnica powercap \href{https://github.com/powercap/powercap}{https://github.com/powercap/powercap}.} pre čítanie RAPL registrov
 a implementácia rozhrania pre čítanie TSC (Time Stamp Counter) registra\footnote{Rozhranie pre čítanie TSC registra\\\href{https://github.com/LITMUS-RT/liblitmus/blob/master/arch/x86/include/asm/cycles.h}{https://github.com/LITMUS-RT/liblitmus/blob/master/arch/x86/include/asm/cycles.h}.}.
-
 Obrázky a tabuľky sú zostavované podobne ako v \cite{Platypus} pre referenciu a porovnanie získaných výsledkov.
 
 \subsection{Analýza spotreby energie pre jednotlivé inštrukcie}
@@ -65,11 +54,7 @@ Spotreba energie inštrukcií bola meraná pomocou RAPL rozhrania, čo znamená,
 Ako kompenzácia pre túto skutočnosť sa každá inštrukcia spúšťala $50000$-krát po sebe a bola zmeraná celková spotreba od začiatku behu po koniec. Tieto spustenia
 boli zabalené do cyklu, čím sa ale pridala nežiadaná réžia do merania. Vplyv na spotrebu energie tejto réžie bol odstránený odpočítaním zmeranej spotreby
 prázdneho cyklu od získaných meraní pre inštrukciu. Spotreba bola takto pre každú inštrukciu meraná toľkokrát, kým sa nezískalo $10000$ nenulových stôp.
-Ošetrenie pre prijatie iba nenulovej stopy je z dôvodu, že pri mnohých inštrukciách, ktorých rýchlosť vykonania je prinízka, sa RAPL čítače nestihnú aktualizovať.
-
-Na obrázku \ref{img:instruction_comparison} je zobrazená energetická spotreba vybraných inštrukcií. V porovnaní s \cite{Platypus} je možné vidieť nielen odlišné
-poradie inštrukcií v spotrebe, ale aj rôzne prekrytie spotrieb. Inštrukcia \code{clflush} je najjednoduchšie rozlíšiteľná od ostatných, pričom \code{rdtsc} sa
-od \code{mov} líši minimálne.
+Ošetrenie pre prijatie iba nenulovej stopy je z dôvodu, že pri mnohých inštrukciách, ktorých rýchlosť vykonania je privysoká, sa RAPL čítače nestihnú aktualizovať.
 
 \begin{figure}\label{img:instruction_comparison}
   \centering
@@ -77,7 +62,45 @@ od \code{mov} líši minimálne.
   \caption{Porovnanie spotreby vybraných inštrukcií.}
 \end{figure}
 
-\subsection{Analýza spotreby energie pre rôzne operandy}
-Podobne ako pri meraní spotreby inštrukcií, aj tu sa inštrukcie spúšťali $50000$-krát, avšak samotných stôp sa získavalo až // TODO.
+Na obrázku \ref{img:instruction_comparison} je zobrazená energetická spotreba vybraných inštrukcií. V porovnaní s \cite{Platypus} je možné vidieť nielen odlišné
+zoradenie inštrukcií podľa spotreby, ale aj rôzne prekrytie spotrieb. Inštrukcia \code{clflush} je najjednoduchšie rozlíšiteľná od ostatných, pričom \code{rdtsc} sa
+od \code{mov} líši minimálne. Tabuľka \ref{tab:avg_energy_per_instruction} zobrazuje priemernú zmeranú spotrebu pre deväť rôznych inštrukcií.
 
+\begin{table}\label{tab:avg_energy_per_instruction}
+  \centering
+  \caption{Priemerná zmeraná spotreba jednotlivých inštrukcií.}
+  \begin{tabular}{ | l  r | }
+    \hline
+    Inštrukcia & Priemerná spotreba \\
+    \hline
+    \code{nop} & $0.08901 \mu J$ \\
+    \code{inc} & $0.09315 \mu J$ \\
+    \code{xor} & $0.09298 \mu J$ \\
+    \code{mov} & $0.18403 \mu J$ \\
+    \code{imul} & $0.17493 \mu J$ \\
+    \code{fscale} & $1.10859 \mu J$ \\
+    \code{rdrand} & $1.03944 \mu J$ \\
+    \code{rdtsc} & $0.16500 \mu J$ \\
+    \code{clflush} & $0.46188 \mu J$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Analýza spotreby energie pre rôzne operandy}
+Podobne ako pri meraní spotreby inštrukcií, aj tu sa inštrukcie spúšťali $50000$-krát, avšak samotných stôp sa získavalo až $70000$.
+Merala sa inštrukcia \code{imul}, pre ktorú sa podobne ako v \cite{Platypus} nastavil jeden operand na konštantu $8$, pričom druhý
+sa nastavil na tri rôzne Hammingove váhy, konkrétne na $0$, $32$ a $64$. Bity operandov boli nastavené zoskupene, a teda jeden sled núl nasledovaný jedným sledom
+jednotiek. Na obrázku \ref{img:imul_operands} je vidieť, že veľkosť operandov nemá žiaden výrazný dopad na rozloženie spotreby energie čítanej pomocou RAPL.
+
+\begin{figure}\label{img:imul_operands}
+  \centering
+  \includegraphics[scale=0.7]{./obrazky-figures/imul_operand_consumption.png}
+  \caption{Porovnanie spotreby inštrukcie \code{imul} s operandami rôznej Hammingovej váhy.}
+\end{figure}
+
+\section{Vyhodnotenie a záver}
+// TODO popisat, ze potencialne mam zly procesor, lebo Sandy a Ivy bridge podla \cite{Platypus} iba "estimate the power consumption [27] and do not rely
+on hardware probes", cize nevedeli na tych architekturach nic zistit, co sa operandov a dat tyka... coz je blbe, bo ja nemam pristup k architekturam novsim,
+nez Haswell...
+// TODO popisat, ze priamy pristup k MSR nemalo ziaden prinos oproti powercap
 

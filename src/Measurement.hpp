@@ -5,6 +5,7 @@
 #include <powercap/powercap.h>
 #include <powercap/powercap-rapl.h>
 
+#include "rapl-msr.hpp"
 #include "rdtsc.h"
 
 #define FROM_MICRO_CONVERSION_CONST 1000000.0
@@ -34,6 +35,8 @@ public:
 
     void start_measurement();
     void stop_measurement();
+    void start_measurement_msr();
+    void stop_measurement_msr();
     void print();
 
     double get_energy();
