@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 
+#include "covert_channel.hpp"
 #include "instr.hpp"
 #include "rapl-msr.hpp"
 #include "Measurement.hpp"
@@ -109,6 +110,9 @@ int main(int argc, char const *argv[])
     if (m.init_rapl() < 0) {
         return EXIT_FAILURE;
     }
+
+    covert_channel(nullptr, 0);
+    return 0;
 
     const int iterations = 50000;
     const int runs = 10000; // runs have changed their meaning - now it is the number of valid (nonzero) runs of measurements.

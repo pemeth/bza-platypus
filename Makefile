@@ -5,7 +5,7 @@ SRC_DIR := scr/
 BUILD_DIR := build/
 SRCS := $(wildcard src/*.cpp)
 OBJECTS := $(addprefix build/,$(notdir $(SRCS:.cpp=.o)))
-LIBS := `pkg-config --libs powercap` -lm
+LIBS := `pkg-config --libs powercap` -lm -pthread
 PACKFILE := xnemet04.zip
 
 # Python

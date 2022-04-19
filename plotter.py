@@ -68,9 +68,17 @@ def plot_operand_energy():
     plt.ylabel("Odhad hustoty rozloženia (KDE)")
     plt.xlabel("Energia v \u03bcJ")
 
+def plot_covert_channel():
+    f = "covert_channel.csv"
+
+    data = np.loadtxt(f)
+
+    plt.plot(data)
+
 #plot_rapl_refresh_rates()
-plot_instruction_energy()
+#plot_instruction_energy()
 #plot_operand_energy()
+plot_covert_channel()
 
 #plt.title("Porovnanie inštrukcií")
 plt.legend()
