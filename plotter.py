@@ -73,8 +73,8 @@ def plot_covert_channel():
 
     data = np.loadtxt(f)
 
-    plt.plot(data, label="skrytý kanál")
-    plt.ylabel("Energia")
+    plt.plot(data)
+    plt.ylabel("Energia v \u03bcJ")
 
     #window = 10
     #avg = np.convolve(data, np.ones(window), 'valid') / window

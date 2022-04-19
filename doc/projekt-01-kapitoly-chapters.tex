@@ -1,17 +1,16 @@
 \newcommand{\code}{\texttt}
 
-\chapter{Introduction}
-// TODO
-
-\chapter{Platypus}
+\chapter{Úvod}
 Moderné procesory od výrobcu \emph{Intel} majú na svojich čipoch integrované obvody a čítače pre počítanie a ukladanie odhadu spotreby niektorých častí procesora.
-Prístup k týmto čítačom (sekcia \ref{sec:rapl}) bol pôvodne neprivilegovaný, čo otváralo možnosti potenciálnych postranných útokov, na základe čoho bola rodina útokov
+Prístup k týmto čítačom bol pôvodne neprivilegovaný, čo otváralo možnosti potenciálnych postranných útokov, na základe čoho bola rodina útokov
 Platypus vyvinutá. Jedná sa o plne softvérové útoky, ktorými je možné extrahovať rôzne citlivé informácie z napadnutého systému. Medzi samotné útoky
 patrí rozlišovanie vykonávaných inštrukcií a veľkostí ich operandov, získanie RSA kľúča zo \emph{square-and-always-multiply} algoritmu a mnoho ďalších.
 
-\section{Intel RAPL} \label{sec:rapl}
+\chapter{Platypus}
+%\section{Intel RAPL} \label{sec:rapl}
 Moderné \emph{Intel} procesory poskytujú \emph{RAPL} (Running Average Power Limit) rozhrania pre monitorovanie odhadovanej akumulovanej spotreby procesora
-od jeho resetu. Táto spotreba je ukladaná v modelu špecifických registroch (MSR) a je ju možné čítať priamo (rozhrania \code{/dev/msr} alebo \code{/dev/safe-msr}),
+od jeho resetu. Táto spotreba je ukladaná v modelu špecifických registroch (MSR) a je ju možné čítať priamo (rozhrania \code{/dev/msr}, \code{/dev/safe-msr}
+alebo \code{/dev/cpu/*/msr}),
 prípadne za pomoci rámca \code{powercap}. Týmto spôsobom meraná spotreba je často využívaná pre rôzne účely ako sú modulácia výkonu procesora,
 sledovanie spotreby, prípadne profilovanie softvéru.
 RAPL poskytuje údaje pre rôzne domény procesora:
@@ -22,7 +21,7 @@ RAPL poskytuje údaje pre rôzne domény procesora:
     \item \emph{DRAM} pre systémovú pamäť pre daný soket.
 \end{itemize}
 Toto rozdelenie platí pre väčšinu procesorov, avšak niektoré nové procesory obsahujú viac, než jednu package doménu na jednom čipe, prípadne sa dopĺňa
-nová doména \emph{psys}. % // TODO cituj/footnote https://github.com/powercap/powercap/issues/3
+nová doména \emph{psys}\footnote{\href{https://github.com/powercap/powercap/issues/3}{https://github.com/powercap/powercap/issues/3}}.
 Rámec \code{powercap} umožňuje jednoduchý prístup k týmto doménam.
 RAPL registre sa podľa zistení \cite{Platypus} aktualizujú raz za $1000 \mu s$ pre domény package a DRAM a raz za $50 \mu s$ pre doménu core.
 Časy pre domény core a package boli zmerané aj mojou implementáciou a žiadny zásadný rozdiel v rýchlosti aktualizácie hodnôt
@@ -42,8 +41,6 @@ prípady, keď je vzorkovacia frekvencia výrazne obmedzená.
 
 \section{Experimenty}
 Táto práca sa pokúsila reprodukovať niektoré časti publikácie \cite{Platypus}.
-// TODO uvod do sekcie
-
 Procesor, na ktorom boli vykonávané experimenty je \emph{Intel Core i5-4200U CPU @ 1.60GHz} (architektúra \emph{Haswell}). Bola využitá knižnica
 powercap\footnote{Knižnica powercap \href{https://github.com/powercap/powercap}{https://github.com/powercap/powercap}.} pre čítanie RAPL registrov
 a implementácia rozhrania pre čítanie TSC (Time Stamp Counter) registra\footnote{Rozhranie pre čítanie TSC registra\\\href{https://github.com/LITMUS-RT/liblitmus/blob/master/arch/x86/include/asm/cycles.h}{https://github.com/LITMUS-RT/liblitmus/blob/master/arch/x86/include/asm/cycles.h}.}.
@@ -98,9 +95,28 @@ jednotiek. Na obrázku \ref{img:imul_operands} je vidieť, že veľkosť operand
   \caption{Porovnanie spotreby inštrukcie \code{imul} s operandami rôznej Hammingovej váhy.}
 \end{figure}
 
+\subsection{Skrytý kanál}
+Jednou z vecí, ktoré monitorovanie spotreby procesora umožňuje, je vytvorenie skrytých kanálov za pomoci manipulácie spotreby. Na obrázku \ref{img:covert_channel}
+je možné vidieť vizualizáciu správy zaslanej cez skrytý kanál medzi dvoma procesorovými vláknami. Zasielaná správa bol sled bitov \code{101001100}.
+Vlákna neboli žiadnym spôsobom explicitne synchronizované, kvôli čomu je možné vidieť kľudový stav spotreby pred prvým preneseným bitom, ked prijímač iba naslúchal.
+
+Počas implementácie skrytého kanálu sa prejavilo možné obmedzenie knižnice powercap, a to také, že nie je schopné získať informácie o spotrebe energie v prípade,
+že je volaná v rámci dynamicky vytvoreného vlákna. Kvôli tomuto obmedzeniu sa pre účely merania spotrebovanej energie pristupovalo priamo k MSR cez
+rozhranie \code{/dev/cpu/*/msr}.
+
+\begin{figure}\label{img:covert_channel}
+  \centering
+  \includegraphics[scale=0.7]{./obrazky-figures/covert_channel.png}
+  \caption{Vykreslenie sledu bitov \code{101001100} poslaných cez skrytý kanál za pomoci manipulácie spotreby procesora.}
+\end{figure}
+
 \section{Vyhodnotenie a záver}
-// TODO popisat, ze potencialne mam zly procesor, lebo Sandy a Ivy bridge podla \cite{Platypus} iba "estimate the power consumption [27] and do not rely
-on hardware probes", cize nevedeli na tych architekturach nic zistit, co sa operandov a dat tyka... coz je blbe, bo ja nemam pristup k architekturam novsim,
-nez Haswell...
-// TODO popisat, ze priamy pristup k MSR nemalo ziaden prinos oproti powercap
+V tejto práci som sa pokúsil o reprodukovanie vybraných častí práce \cite{Platypus}. \textbf{Experiment na rozlíšenie rôznych inštrukcií} na základe ich spotreby bol
+čiastočne úspešný. Mnohé inštrukcie bolo možné rozlíšiť touto metódou, avšak pri inštrukciách s dostatočne podobnou spotrebou, ako sú napríklad trojica \code{imul},
+\code{add} a \code{mov}, prípadne dvojica \code{nop} a \code{inc}, som nebol schopný s istotou rozlíšiť tieto inštrukcie.
+\textbf{Experiment detekcie Hammingovej váhy operandov inštrukcií} bol neúspešný. Žiadny významný rozdiel v spotrebe medzi rôznymi Hammingovými váhami som nebol schopný
+detegovať. Možným dôvodom je, že systém, na ktorom bol experiment vykonávaný neobsahuje čidlá pre meranie energie, ale spotrebu iba odhaduje.
+V \cite{Platypus} sa uvádza, že architektúry Sandy bridge a Ivy bridge tieto čidlá neobsahujú, pričom môj testovací systém je postavený
+na architektúre Haswell, čo je priamym nástupcom Ivy bridge. V danej publikácii architektúru Haswell netestovali a v iných publikáciách som
+zmienku o najskoršom pridaní čidiel nenašiel. \textbf{Experiment skrytého kanálu} bol úspešný.
 
