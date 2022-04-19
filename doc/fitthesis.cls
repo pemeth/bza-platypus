@@ -699,18 +699,18 @@ Management}{\@fit@EN}%
       \@date
   \end{flushright}
 
-\ifx\undefined\@acknowledgment
-\else
-\vspace{20mm}
-\ifslovak
-  \mktxt@b{16}{\@tackn@SK}
-\else
-  \mktxt@b{16}{\ifczech\@tackn@CS\else\@tackn@EN\fi}
-\fi
-\noindent\@acknowledgment
-\fi
+%\ifx\undefined\@acknowledgment
+%\else
+%\vspace{20mm}
+%\ifslovak
+%  \mktxt@b{16}{\@tackn@SK}
+%\else
+%  \mktxt@b{16}{\ifczech\@tackn@CS\else\@tackn@EN\fi}
+%\fi
+%\noindent\@acknowledgment
+%\fi
 
-\vfill
+%\vfill
 
 %===================================================
 \iftwoside
@@ -1043,14 +1043,14 @@ Management}{\@fit@EN}%
 \fontfamily{\familydefault}\selectfont%
 
 %=================================================================================
-\makeabstract
-\ifx\@textendedabstract\@empty
-\else
-  \makeextendedabstract
-\fi
-\makedeclaration
-\clearpage
-\setcounter{tocdepth}{2}\setcounter{page}{1}
+%\makeabstract
+%\ifx\@textendedabstract\@empty
+%\else
+%  \makeextendedabstract
+%\fi
+%\makedeclaration
+%\clearpage
+%\setcounter{tocdepth}{2}\setcounter{page}{1}
 }
 
 %-----------------------------------------------------------------------------
