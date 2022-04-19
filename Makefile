@@ -23,10 +23,12 @@ build: $(OBJECTS)
 	$(CC) $(FLAGS) -o $(NAME) $^ $(LIBS)
 
 build/%.o: src/%.cpp
+	mkdir -p build
 	$(CC) $(FLAGS) -o $@ -c $^ $(LIBS)
 
 pack:
-	zip $(PACKFILE) $(SRCS) $(SRCS:.cpp=.hpp) Makefile
+	cp doc/projekt.pdf xnemet04.pdf
+	zip $(PACKFILE) $(SRCS) $(SRCS:.cpp=.hpp) src/rdtsc.h Makefile plotter.py requirements.txt README.md xnemet04.pdf
 
 clean:
 	rm -f $(NAME) $(OBJECTS) $(PACKFILE)
