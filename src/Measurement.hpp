@@ -33,6 +33,8 @@ public:
 
     int init_rapl();
 
+    void start_measurement(powercap_rapl_zone zone);
+    void stop_measurement(powercap_rapl_zone zone);
     void start_measurement();
     void stop_measurement();
     void start_measurement_msr();

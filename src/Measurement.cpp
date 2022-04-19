@@ -40,6 +40,24 @@ Measurement::~Measurement()
 {
 }
 
+void Measurement::start_measurement(powercap_rapl_zone zone)
+{
+    this->timer_start();
+    powercap_rapl_get_energy_uj(
+        &this->pkg,
+        zone,
+        &this->energy1);
+}
+
+void Measurement::stop_measurement(powercap_rapl_zone zone)
+{
+    this->timer_stop();
+    powercap_rapl_get_energy_uj(
+        &this->pkg,
+        zone,
+        &this->energy2);
+}
+
 void Measurement::start_measurement()
 {
     this->timer_start();

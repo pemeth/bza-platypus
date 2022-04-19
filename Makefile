@@ -17,7 +17,7 @@ all: build
 
 run: build
 	@echo "---COMPILATION FINISHED---"
-	@sudo taskset -c 0 ./bza_platypus
+	@sudo taskset -c 0 ./bza_platypus -iorc
 
 build: $(OBJECTS)
 	$(CC) $(FLAGS) -o $(NAME) $^ $(LIBS)
