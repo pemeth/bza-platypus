@@ -78,19 +78,24 @@ static void receive()
     Measurement m = Measurement(cycles_per_sec);
     Measurement mm = Measurement(cycles_per_sec);
     Stats s = Stats();
+    std::ofstream f;
+    f.open("covert_channel.csv");
 
     cycles_t curr_cycles = get_cycles();
 
 
     // listen for about 5 seconds
     while (get_cycles() <= (curr_cycles + cycles_per_sec * 7)) {
+        // Get measurement
         // need to use raw MSRs, as powercap doesnt seem to work in threads
         m.start_measurement_msr();
         usleep(5000);
         m.stop_measurement_msr();
 
-        std::cerr << m.get_energy() << '\n';
+        f << m.get_energy() << '\n';
     }
+
+    f.close();
 }
 
 void covert_channel(uint8_t *bits, size_t bits_len)
