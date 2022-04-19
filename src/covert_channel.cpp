@@ -1,5 +1,8 @@
+#include <numeric>
 #include <iostream>
+#include <cmath>
 #include <thread>
+#include <vector>
 
 #include <math.h>
 
@@ -27,6 +30,15 @@ static inline void high_energy_function(
             k = 0;
         }
     }
+}
+
+static inline std::vector<double> shift_left(std::vector<double> v, int shift_by)
+{
+    for (size_t i = shift_by; i < v.size(); i++) {
+        v[i-shift_by] = v[i];
+    }
+
+    return v;
 }
 
 static void transmit(uint8_t *bits, size_t bits_len)
@@ -59,10 +71,10 @@ static void transmit(uint8_t *bits, size_t bits_len)
     // Transmit the data
     for (uint32_t i = 0; i < message_len; i++) {
         if (message[i] == 0) {
-            std::cout << "0" << std::flush;
+            //std::cout << "0" << std::flush;
             usleep(transmission_time);
         } else {
-            std::cout << "1" << std::flush;
+            //std::cout << "1" << std::flush;
             high_energy_function(dummy_data, dummy_data_len, cycles_per_microsec, transmission_time);
         }
     }
@@ -72,9 +84,18 @@ static void transmit(uint8_t *bits, size_t bits_len)
     delete[] message;
 }
 
+static inline void measure(Measurement *m, size_t sleep_period)
+{
+    // need to use raw MSRs, as powercap doesnt seem to work in threads
+    m->start_measurement_msr();
+    usleep(sleep_period);
+    m->stop_measurement_msr();
+}
+
 static void receive()
 {
     const cycles_t cycles_per_sec = calibrate();
+    const size_t sleep_period = 5000;
     Measurement m = Measurement(cycles_per_sec);
     Measurement mm = Measurement(cycles_per_sec);
     Stats s = Stats();
@@ -83,14 +104,10 @@ static void receive()
 
     cycles_t curr_cycles = get_cycles();
 
-
     // listen for about 5 seconds
     while (get_cycles() <= (curr_cycles + cycles_per_sec * 7)) {
         // Get measurement
-        // need to use raw MSRs, as powercap doesnt seem to work in threads
-        m.start_measurement_msr();
-        usleep(5000);
-        m.stop_measurement_msr();
+        measure(&m, sleep_period);
 
         f << m.get_energy() << '\n';
     }
@@ -106,3 +123,77 @@ void covert_channel(uint8_t *bits, size_t bits_len)
     tx.join();
     rx.join();
 }
+
+
+// TODO an idea on how to decode the transmission without timing information
+// - the hello sequence is 8 alternating bits (10101010) followed by 7 zero-bits an 1 one-bit
+// - the receiver measures time and energy between bit flips in the first octet and gets an average
+// - the receiver start its clock as soon as it detects the hello sequences last one-bit
+// - the receiver can decode incoming data based on measurements sampled from the hello sequence
+// It is a two-step method, where for the first step a (kinda-working) draft is below...
+/* static void receive()
+{
+    const cycles_t cycles_per_sec = calibrate();
+    const size_t sleep_period = 5000;
+    Measurement m = Measurement(cycles_per_sec);
+    Measurement mm = Measurement(cycles_per_sec);
+    Stats s = Stats();
+    std::ofstream f;
+    f.open("covert_channel.csv");
+
+    cycles_t curr_cycles = get_cycles();
+
+    // Set up moving window for gathering moving average
+    const size_t window_size = 10;
+    std::vector<double> moving_window = std::vector<double>(window_size);
+    for (size_t i = 0; i < window_size; i++) {
+        measure(&m, sleep_period);
+        moving_window[i] = m.get_energy();
+    }
+
+    double moving_avg = 0;
+    double last_avg = 0;
+    size_t similar_avg_cnt = 0;
+    size_t cnt_tolerance = 0;
+    const size_t cnt_tolerance_threshold = 5; // Probably has to be smaller than the mod value for "it" (this condition if (it % 20 == 0) last_avg = moving_avg;)
+    const double energy_tolerance = 5000;
+    double last_bit_energy = 0;
+
+    size_t it = 0;
+
+    // listen for about 5 seconds
+    while (get_cycles() <= (curr_cycles + cycles_per_sec * 7)) {
+        // Get measurement
+        measure(&m, sleep_period);
+
+        // Shift the moving window
+        moving_window = shift_left(moving_window, 1);
+        moving_window[window_size - 1] = m.get_energy();
+
+        if (it % 20 == 0) last_avg = moving_avg;
+        moving_avg = std::accumulate(moving_window.begin(), moving_window.end(), 0.0) / window_size;
+
+        const double avg_diff = abs(last_avg - moving_avg);
+        if (avg_diff >= energy_tolerance) {
+            similar_avg_cnt += 1;
+            cnt_tolerance = 0;
+            last_bit_energy = moving_avg;
+        } else {
+            cnt_tolerance += 1;
+        }
+
+        if (cnt_tolerance == cnt_tolerance_threshold) {
+            const double energy_threshold = 35000;//abs(moving_avg - last_bit_energy) / 2.0;
+            if (moving_avg >= energy_threshold) {
+                std::cout << "1" << std::flush;
+            } else {
+                std::cout << "0" << std::flush;
+            }
+        }
+        it++;
+
+        f << m.get_energy() << '\n';
+    }
+
+    f.close();
+} */

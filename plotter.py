@@ -73,11 +73,12 @@ def plot_covert_channel():
 
     data = np.loadtxt(f)
 
-    plt.plot(data, label=f.split(".")[0])
+    plt.plot(data, label="skrytý kanál")
+    plt.ylabel("Energia")
 
-    window = 10
-    avg = np.convolve(data, np.ones(window), 'valid') / window
-    plt.plot(avg, label="rolling average")
+    #window = 10
+    #avg = np.convolve(data, np.ones(window), 'valid') / window
+    #plt.plot(avg, label="rolling average")
 
 #plot_rapl_refresh_rates()
 #plot_instruction_energy()
