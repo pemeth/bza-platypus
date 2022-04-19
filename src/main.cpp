@@ -111,7 +111,9 @@ int main(int argc, char const *argv[])
         return EXIT_FAILURE;
     }
 
-    covert_channel(nullptr, 0);
+    uint8_t bits[] = {1,1,1,1,0,0,0,0};
+    uint64_t  bits_len = 8;
+    covert_channel(bits, bits_len);
     return 0;
 
     const int iterations = 50000;
