@@ -6,6 +6,7 @@ build/
 
 # Statistics files
 *.csv
+loop_stats.txt
 
 # Python venv
 .venv/
