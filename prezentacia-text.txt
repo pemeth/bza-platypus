@@ -1,0 +1,57 @@
+dobry den, volam sa patrik nemeth a budem
+prezentovat o replikacii niektorych casti
+publikacie Platypus
+
+Platypus je mnozina exploitov, ktora vyuziva
+postranny kanal citania vykonu
+procesora systemu. Umoznuju to integrovane citace
+energie sledujuce
+spotrebu procesora, ku ktorych hodnotam mohol
+donedavna pristupovat aj
+neprivilegovany uzivatel. Jednoduchym obmedzenim
+takychto utokov je
+zprisnenie pristupovych prav k rozhraniam citacov.
+Vyrobcovia procesorov zacali vykonavat aj zmeny
+v hardveri, ktore maju tieto typy utokov ztazit.
+
+RAPL je systém citacov poskytujucich rozne
+informacie o spotrebe procesora.
+Existuju rozne domeny, v ktorych RAPL pracuje.
+Vacsina procesorov obsahuje domeny core pre
+merania jednotlivych jadier, package,
+ktory obvykle poskytuje informacie o sokete
+a dram pre pamat.
+Intel uvádza periodu aktualizacie na priblizne
+1ms.
+
+Medzi vykonane experimenty patri rozlisovanie
+instrukcii, ktore bolo ciastocne uspesne.
+Niektore instrukcie ako clflush,
+rdrand a fscale bolo mozne rozlisit na
+zaklade meranej energie. Vacsinou sa vsak
+instrukcie vyznamne prekryvali ako je vidno
+pre mov a rdtsc. Vidiet vsak, ze v zavislosti
+od domeny, v ktorej boli vykonavane merania,
+sa vysledky lisili.
+Package domena obecne poskytovala lepsie vysledky.
+
+Rozlisovanie operandov bolo neuspesne.
+Rozlisovanie bolo zamerane na detekciu Hammingovej
+vahy daneho operandu, a teda v sa jednalo
+vlastne o detekciu poctu nastavenych bitov
+v operande. Testovali sa operandy instrukcie imul,
+kde jeden z operandov bol nastaveny na konstantnu
+hodnotu a druhz bol meneny. Zobrazený je najlepší
+najdeny pripad, kde sa spotreby zdaju odlisne
+a zoradene, ale vacsina pripadov takato nebola.
+
+Vytvorenie skryteho kanalu pomocou umelej
+manipulacie spotreby procerora
+bolo úspešné. Odoslanie a prijímanie bitov bolo
+vykonavane bez synchronizacie a za pasivneho
+nasluchania prijimacej strany. Zobrazena je zmena
+spotreby v case, v ktorej je zakódovaná binarna
+sprava.
+
+Ďakujem.
+
