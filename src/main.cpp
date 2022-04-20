@@ -1,3 +1,10 @@
+/**
+ * @file main.cpp
+ * @author Patrik Németh (xnemet04@stud.fit.vutbr.cz)
+ * @brief Entrypoint.
+ * @date 2022-04-20
+ */
+
 #include <iostream>
 #include <string>
 

@@ -1,6 +1,9 @@
 /**
- * Inspired by:
- * https://web.eece.maine.edu/~vweaver/projects/rapl/rapl-read.c
+ * @file rapl-msr.cpp
+ * @author Patrik Németh (xnemet04@stud.fit.vutbr.cz)
+ * @brief Reporting of RAPL values by reading MSRs directly.
+ * Modified code from https://web.eece.maine.edu/~vweaver/projects/rapl/rapl-read.c.
+ * @date 2022-04-20
  *
  * Intel MSR reference (section 14.9):
  * https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-vol-3b-part-2-manual.pdf

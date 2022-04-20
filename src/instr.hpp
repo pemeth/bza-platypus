@@ -1,3 +1,10 @@
+/**
+ * @file instr.hpp
+ * @author Patrik Németh (xnemet04@stud.fit.vutbr.cz)
+ * @brief Functions for measuring energy consumption of various instructions.
+ * @date 2022-04-20
+ */
+
 #ifndef INSTRUCTIONTEST_H
 #define INSTRUCTIONTEST_H
 

@@ -1,3 +1,10 @@
+/**
+ * @file Stats.hpp
+ * @author Patrik Németh (xnemet04@stud.fit.vutbr.cz)
+ * @brief Class handling measurement statistics gathering.
+ * @date 2022-04-20
+ */
+
 #ifndef STATS_H
 #define STATS_H
 

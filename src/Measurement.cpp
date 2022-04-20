@@ -1,3 +1,10 @@
+/**
+ * @file Measurement.cpp
+ * @author Patrik Németh (xnemet04@stud.fit.vutbr.cz)
+ * @brief Class for handling individual power and timing measurements.
+ * @date 2022-04-20
+ */
+
 #include <iostream> // For debugging
 
 #include "Measurement.hpp"

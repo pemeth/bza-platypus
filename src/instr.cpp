@@ -1,3 +1,10 @@
+/**
+ * @file instr.cpp
+ * @author Patrik Németh (xnemet04@stud.fit.vutbr.cz)
+ * @brief Functions for measuring energy consumption of various instructions.
+ * @date 2022-04-20
+ */
+
 #include <iostream>
 
 #include "instr.hpp"

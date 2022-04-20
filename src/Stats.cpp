@@ -1,3 +1,10 @@
+/**
+ * @file Stats.cpp
+ * @author Patrik Németh (xnemet04@stud.fit.vutbr.cz)
+ * @brief Class handling measurement statistics gathering.
+ * @date 2022-04-20
+ */
+
 #include "Stats.hpp"
 
 #define VECTOR_RESERVE 10000
