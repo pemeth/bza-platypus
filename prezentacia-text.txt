@@ -1,4 +1,91 @@
 dobry den, volam sa patrik nemeth a budem
+prezentovat o pokuse replikovat casti
+publikacie platypus
+
+co je platypus? je to mnozina exploitov,
+ktore vyuzivaju vykonnostny postranny kanal.
+Jedna sa o cisto softverove riesenie
+monitorovania spotreby, a to za pomoci
+pristupovania k integrovanym citacom
+v procesoroch.
+povodne bolo k tymto citacom mozne
+pristupovat aj ako neprivilegovany uzivatel,
+co taketo utoky zjednodusovali.
+
+RAPL je system spomenutych citacov na intel
+architekturach. pracuje na roznych urovniach,
+tzv. domenach - core, co je jadro procesora,
+package, co je obvykle cely soket
+a dram, teda pamat.
+Tieto citace sa aktualizuju priblizne
+raz za milisekundu.
+
+Pre uspesne meranie spotreby procesora
+je potrebnych niekolko predpokladov.
+Je nutne mat pristup k spolahlivemu casovacu
+na danom systeme. K tomuto posluzi TSC, ktory
+je na modernych procesoroch aktualizovany
+nezavisle od frekvencie CPU.
+Dalej je nutne vyuzit assembler pre
+vacsiu kontrolu nad vykonavanymi instrukciami.
+A samozrejme pristup k samotnym RAPL citacom.
+K nim sa da pristupovat dvoma hlavnymi
+sposobmi, a to cez rozhranie powercap,
+pripadne priamo cez CPU registre.
+
+Meranie spotreby jednotlivych instrukcii
+je softverovo nemozne. RAPL registre sa
+aktualizuju prilis pomaly a maju prilis nizke
+rozlisenie, aby dokazali zachytit zmenu v spotrebe
+v dosledku jedinej instrukcie.
+Preto je nutne vykonat velakrat tu istu instrukciu
+po sebe, aby citace dokazali tuto aktivitu zachytit.
+Pre vybudovanie profilu instrukcie je ale potrebne
+vykonat niekolko behov takychto merani.
+
+Na grafoch je mozne vidiet profily roznych
+instrukcii. Niektore instrukcie ako clflush,
+rdrand a fscale je mozne rozlisit na
+zaklade meranej energie. Vacsinou sa vsak
+instrukcie vyznamne prekryvali ako je vidno
+pre mov a rdtsc. Vidiet vsak, ze v zavislosti
+od domeny, v ktorej boli vykonavane merania,
+sa vysledky lisili.
+Package domena obecne poskytovala lepsie vysledky.
+
+Publikacia platypus ukazala, ze na zaklade
+spotreby meranej pomocou RAPL je mozne
+rozlisit aj operandy roznych instrukcii.
+Na zaklade poctu nastavenych bitov - Hammingovej
+vahy - operandov sa totiz meni spotreba instrukcie.
+Merania boli vykonane na instrukcii imul, kde
+jeden operand zostaval konstantny a druhy menil
+svoju Hammingovu vahu.
+
+Ako je mozne vidiet na grafoch, rozlisit operandy
+sa nepodarilo. Hoci sa spotreba na zaklade operandov
+lisi, rozdiely nie su dostatocne velke a hlavne
+dostatocne konzistentne na to, aby sa dala
+vyuzit pre ich rozlisenie.
+
+Poslednym experimentom bolo vytvorenie skryteho
+komunikacneho kanalu za pomoci manipulacie
+spotreby procesora.
+Kanal bol vytvoreny medzi dvoma nezavislymi vlaknami,
+ktore neboli nijak synchronizovane.
+Jedno z vlaken bolo nasluchajuce, ktore periodicky
+zaznamenavalo spotrebu CPU.
+Druhe bolo vysielajuce, ktore vysielalo binarnu
+spravu kodovanu v spotrebe CPU. Pri vysielani
+binarnej 0 vlakno nevykonavalo ziadnu pracu,
+pricom pri vysielani binarnej 1 vlakno
+umelo zvysilo spotrebu vykonavanim umelych
+vypoctov.
+
+Na grafe je mozne vidiet prijimany kod.
+
+-=-=-=-=-=-=-  OLD NOTES -=-=-=-=-=-=-=-=-
+dobry den, volam sa patrik nemeth a budem
 prezentovat o replikacii niektorych casti
 publikacie Platypus
 
